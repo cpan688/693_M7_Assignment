@@ -114,9 +114,9 @@ export default class EmployeeList extends React.Component {
     render() {
         return (
             <React.Fragment>
+                <EmployeeAdd createEmployee={this.createEmployee} />
                 <EmployeeFilter />
                 <EmployeeTable employees={this.state.employees} deleteEmployee={this.deleteEmployee} />
-                <EmployeeAdd createEmployee={this.createEmployee} />
             </React.Fragment>
         )
     }
