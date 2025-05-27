@@ -1,5 +1,5 @@
 import React from 'react'
-import { Badge, Button, Table, Card } from 'react-bootstrap'
+import { Badge, Button, Table, Card, Modal } from 'react-bootstrap'
 import { useLocation, Link } from 'react-router-dom'
 import EmployeeFilter from './EmployeeFilter.jsx'
 import EmployeeAdd from './EmployeeAdd.jsx'
@@ -46,22 +46,79 @@ function EmployeeTable(props) {
     )
 }
 
-function EmployeeRow(props) {
-    function onDeleteClick() {
-        props.deleteEmployee(props.employee._id)
+class EmployeeRow extends React.Component {
+    constructor() {
+        super()
+        this.state = {
+            modalVisible: false
+        }
+        this.onDeleteClick = this.onDeleteClick.bind(this)
+        this.toggleModal = this.toggleModal.bind(this)
     }
-    return (
-        <tr>
-            <td><Link to={`/edit/${props.employee._id}`}>{props.employee.name}</Link></td>
-            {/* <td>{props.employee.name}</td> */}
-            <td>{props.employee.extension}</td>
-            <td>{props.employee.email}</td>
-            <td>{props.employee.title}</td>
-            <td>{props.employee.dateHired.toDateString()}</td>
-            <td>{props.employee.currentlyEmployed ? 'Yes' : 'No'}</td>
-            <td><Button variant="danger" size="sm" onClick={onDeleteClick}>X</Button></td>
-        </tr>
-    )
+
+    toggleModal() {
+        if (this.state.modalVisible) {
+            this.setState({ modalVisible: false })
+        } else {
+            this.setState({ modalVisible: true })
+        }
+    }
+
+    onDeleteClick() {
+        this.props.deleteEmployee(this.props.employee._id)
+    }
+    
+    render() {
+        return (
+            <>
+            <tr>
+                <td><Link to={`/edit/${this.props.employee._id}`}>{this.props.employee.name}</Link></td>
+                <td>{this.props.employee.extension}</td>
+                <td>{this.props.employee.email}</td>
+                <td>{this.props.employee.title}</td>
+                <td>{this.props.employee.dateHired.toDateString()}</td>
+                <td>{this.props.employee.currentlyEmployed ? 'Yes' : 'No'}</td>
+                <td><Button 
+                        variant="danger" 
+                        size="sm"
+                        onClick={this.toggleModal}
+                        >X
+                    </Button>
+                    {
+                    <Modal show={this.state.modalVisible} onHide={this.toggleModal} centered>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Delete Employee?</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>Are you sure you want to delete this employee?
+                    </Modal.Body>           
+                    <Modal.Footer>
+                        <Button
+                            type="submit"
+                            variant="danger"
+                            size="sm"
+                            className="mt-4"
+                            onClick={this.toggleModal}
+                            >Cancel
+                        </Button>
+                        <Button
+                            type="submit"
+                            variant="success"
+                            size="sm"
+                            className="mt-4"
+                            onClick={() => {
+                                this.onDeleteClick();
+                                this.toggleModal();
+                            }}
+                            >Yes
+                        </Button>
+                    </Modal.Footer>
+                    </Modal>
+                    }
+                    </td>
+            </tr>
+        </>
+        )
+    }
 }
 
 export default class EmployeeList extends React.Component {
